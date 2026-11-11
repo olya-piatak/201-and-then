@@ -1,5 +1,7 @@
 # after-the-200
 
+[![ci](https://github.com/olya-piatak/after-the-200/actions/workflows/ci.yml/badge.svg)](https://github.com/olya-piatak/after-the-200/actions/workflows/ci.yml)
+
 Java tests for what a service does after it has already said yes: the row it
 stored, the event it published and the consumer that reacts to that event,
 possibly twice, possibly at the same time.
