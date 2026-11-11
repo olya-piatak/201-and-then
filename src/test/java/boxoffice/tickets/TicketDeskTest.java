@@ -32,7 +32,10 @@ class TicketDeskTest extends IntegrationTest {
     void an_event_handed_to_two_consumers_at_once_issues_one_ticket() throws Exception {
         // A rebalance can give the same event to a second consumer while the
         // first one is still printing. Here both copies arrive together, one
-        // on each partition, so each consumer gets one.
+        // on each partition, so each consumer gets one. Right after start-up
+        // one consumer can briefly own both partitions, and then there is no
+        // race to test, so wait for the split first.
+        await().atMost(DESK).until(topic::ticketDeskHasOneConsumerPerPartition);
         UUID eventId = UUID.randomUUID();
         long bookingId = Math.abs(eventId.getMostSignificantBits() % 1_000_000_000L) + 1_000_000_000L;
         String payload = """

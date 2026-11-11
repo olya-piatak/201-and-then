@@ -95,6 +95,15 @@ public class Topic {
         }
     }
 
+    /** True when the ticket desk runs as two consumers with one partition each. */
+    public boolean ticketDeskHasOneConsumerPerPartition() throws Exception {
+        try (Admin admin = Admin.create(Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap))) {
+            var group = admin.describeConsumerGroups(List.of(TICKET_DESK)).all().get().get(TICKET_DESK);
+            return group.members().size() == 2
+                    && group.members().stream().allMatch(m -> m.assignment().topicPartitions().size() == 1);
+        }
+    }
+
     private List<TopicPartition> partitions(KafkaConsumer<String, String> consumer) {
         return consumer.partitionsFor(name).stream()
                 .map(info -> new TopicPartition(name, info.partition()))
