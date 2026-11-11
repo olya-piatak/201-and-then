@@ -40,7 +40,27 @@ each one and fails if the suite stays green.
 ```
 $ python3 scripts/fault_drills.py
 
-(filled in from the first CI run)
+CAUGHT  ghost_success: the API answers 201, then the transaction rolls back and nothing is stored
+        BookingApiTest > a booking is stored exactly as the api reported it
+        BookingApiTest > a retried request with the same key returns the same booking
+        BookingApiTest > a taken seat is refused and stays with its owner
+        and 6 more
+CAUGHT  lost_event: the booking is stored but its outbox row is not, so no event ever leaves
+        BookingEventsTest > a refused booking publishes nothing
+        BookingEventsTest > a retried request publishes no second event
+        BookingEventsTest > every booking puts one booking confirmed event on the topic
+        and 1 more
+CAUGHT  double_submit: the idempotency key is ignored, so a retry is told its own seat is taken
+        BookingApiTest > a retried request with the same key returns the same booking
+        BookingEventsTest > a retried request publishes no second event
+CAUGHT  seat_race: the seat is checked, paid for, then written, so two fans both get A1
+        BookingApiTest > a booking is stored exactly as the api reported it
+        BookingApiTest > a taken seat is refused and stays with its owner
+        SeatRaceTest > ten customers racing for one seat produce one booking
+CAUGHT  double_ticket: the desk checks for the event before printing and records it after, so two consumers both print
+        TicketDeskTest > an event handed to two consumers at once issues one ticket
+
+Every fault was caught.
 ```
 
 `seat_race` is the one that passes every test written one request at a time.
@@ -52,9 +72,12 @@ fix is boring: take the seat first and let a primary key decide who got it.
 `double_ticket` is the same bug one hop later. The ticket desk asks "have I
 handled this event?", spends 300 milliseconds rendering a PDF, then writes
 down that it has. The test puts the same event on both partitions, so each of
-the two consumers gets a copy at the same moment. It waits until both
-consumers have committed their offsets before counting tickets, because a
-count of one proves nothing if the second consumer has not run yet.
+the two consumers gets a copy at the same moment. Two things are checked
+before that and after it. Before: the group really is two consumers with one
+partition each, because right after start-up one consumer can hold both and
+then there is no race at all. After: both consumers have committed their
+offsets, because a count of one proves nothing if the second one has not run
+yet.
 
 ## How it is built
 
