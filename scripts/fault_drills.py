@@ -80,7 +80,7 @@ def main():
             missed += 1
             continue
         print(f"CAUGHT  {fault}: {FAULTS[fault]}")
-        for name in caught[:SHOWN]:
+        for name in sorted(caught)[:SHOWN]:
             print("        " + name)
         if len(caught) > SHOWN:
             print(f"        and {len(caught) - SHOWN} more")
