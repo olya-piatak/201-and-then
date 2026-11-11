@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: after-the-200
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/boxoffice}
+    username: ${DATABASE_USER:boxoffice}
+    password: ${DATABASE_PASSWORD:boxoffice}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: ticket-desk
+      auto-offset-reset: earliest
+    listener:
+      concurrency: 2
+
+boxoffice:
+  topic: booking-events
+  relay-interval-ms: 100
+
+drills:
+  fault: ${DRILLS_FAULT:}
