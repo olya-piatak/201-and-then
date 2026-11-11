@@ -1,6 +1,6 @@
 spring:
   application:
-    name: after-the-200
+    name: 201-and-then
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/boxoffice}
     username: ${DATABASE_USER:boxoffice}

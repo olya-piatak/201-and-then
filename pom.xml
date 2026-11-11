@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>boxoffice</groupId>
-    <artifactId>after-the-200</artifactId>
+    <artifactId>201-and-then</artifactId>
     <version>1.0.0</version>
-    <name>after-the-200</name>
+    <name>201-and-then</name>
 
     <properties>
         <java.version>21</java.version>

@@ -1,4 +1,4 @@
-# after-the-200
+# 201-and-then
 
 Java tests for what a service does after it has already said yes: the row it
 stored, the event it published and the consumer that reacts to that event,
